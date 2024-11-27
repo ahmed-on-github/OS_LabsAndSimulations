@@ -44,11 +44,13 @@ int main(){
             printf("%d ",rem[i]);
         printf("\n"); */
 
-        int *blocked_time = (int*)calloc(1,nProcess*sizeof(int)); /*blocking time for each process, initially zeros */
+        int *blocked_time = (int*)calloc(1,nProcess*sizeof(int));   /*blocking time for each process, initially zeros */
+        int *t_finish = (int*)calloc(1,nProcess*sizeof(int));       /*Finish time for each process, initially zeros */
 
         unsigned int t_q ,\
         t=0,\
         t_temp=0,\
+        t_run=0,\
         nFinished=0,\
         CPU_taken=0;
 
@@ -76,7 +78,6 @@ int main(){
                 /*2- checking process blocking */
                 else if(IS_BLOCKED(i) && rem[i] == processes[i].arr[1]){
                     /* if finished IO request */
-
                     if(blocked_time[i]==processes[i].arr[2]){
                         /*  // if not IO bound
                             // move it to ready queue */
@@ -89,6 +90,7 @@ int main(){
                         else{ /*CPU_time[i] = 0*/
                             state[i]=4;
                             nFinished++;
+                            t_finish[i] = t - 1; /* record that its finish cycle is the last cycle*/
                         }
                     }
                     else {/* still in IO request time */
@@ -104,12 +106,14 @@ int main(){
                         CPU_taken=1;
                         rem[i]--;
                         t_temp++;
+                        t_run++;
                     }
                     else{
                         /*process finished*/
                         if(rem[i]==0){
                             state[i]=4;
                             nFinished++;
+                            t_finish[i] = t-1 ; /* record that its finish cycle is the past cycle*/
                         }
                         /*process came to the IO request, Block it !*/
                         else if(rem[i] == processes[i].arr[1]){
@@ -135,8 +139,8 @@ int main(){
             #if (DEBUG_PRINTF_ENABLED != 0)
             print_q(ready_q_head);
             #endif
-            // if CPU is not taken by any process
-            //dequeue a process to it
+            /*  // if CPU is not taken by any process
+                //dequeue a process to it */
             if(!CPU_taken){
                 int running = dequeue(&ready_q_head); // dequeue returns -1 on empty queue
 
@@ -150,15 +154,20 @@ int main(){
                     /*run it for this cycle */
                     rem[running]--;
                     t_temp++;
+                    t_run++;
                 }
             }
-            /*Appending current state to the o/p file */
+            /*Appending current process states to the o/p file */
             if(nFinished<nProcess){
                 APPEND_CURRENT_STATES();
             }
         }
+        /*Append statistics before closing output file*/
+        APPEND_STATISTICS();
     }
 
+
+    /*Close files*/
     fclose(fptr);
     fclose(newfptr);
     return 0;

@@ -58,7 +58,7 @@ do{\
     fprintf(newfptr, "%c%s %d %c", '\n', "Finish time= ", t-2, '\n');\
     fprintf(newfptr, "%s %.9f %c", "CPU Utilization = ", (float)t_run/(t-1), '\n');\
     for(i=0; i<nProcess; i++){\
-        fprintf(newfptr, "%s%d %c %d %c", "Turnaround Time for p", i, '=', t_finish[i]-t_ARRIVAL[i], '\n');\
+        fprintf(newfptr, "%s%d %c %d %c", "Turnaround Time for p", i, '=', (t_finish[i]-t_arrival(i)+1), '\n');\
     }\
 }while(0);
 
