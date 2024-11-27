@@ -1,0 +1,14 @@
+p0 1 2 0 
+p1 1 1 5 
+p2 1 1 3 
+
+Round Robin with time quantum= 2
+
+t=0: P0 RUNNING 
+t=1: P0 BLOCKED 
+t=2: P0 BLOCKED 
+t=3: P0 RUNNING P2 READY 
+t=4: P2 RUNNING 
+t=5: P1 RUNNING P2 BLOCKED 
+t=6: P1 BLOCKED P2 RUNNING 
+t=7: P1 RUNNING 
